@@ -567,11 +567,11 @@ theorem wedge_bijective (gX : GoodNbhd x₀) (gY : GoodNbhd y₀) (n : ℤ) :
           h.map n (B := {base x₀ y₀}) (incl (setB (y₀ := y₀) gX)) (fun _ hx => hx) q.2) ∘
         Prod.map (h.map n (jA (x₀ := x₀) gY) (jA_mapsTo (x₀ := x₀) gY)) (h.map n (jB (y₀ := y₀) gX) (jB_mapsTo (y₀ := y₀) gX)) := by
     funext q
-    simp only [Function.comp_apply, Prod.map_fst, Prod.map_snd]
-    rw [h.map_comp_apply n (incl _) (jA (x₀ := x₀) gY) (inl x₀ y₀) (fun _ hx => hx) (jA_mapsTo (x₀ := x₀) gY)
-        (inl_mapsTo x₀ y₀) rfl,
-      h.map_comp_apply n (incl _) (jB (y₀ := y₀) gX) (inr x₀ y₀) (fun _ hx => hx) (jB_mapsTo (y₀ := y₀) gX)
-        (inr_mapsTo x₀ y₀) rfl]
+    exact congrArg₂ (· + ·)
+      (h.map_comp_apply n (incl (setA (x₀ := x₀) gY)) (jA (x₀ := x₀) gY) (inl x₀ y₀)
+        (fun _ hx => hx) (jA_mapsTo (x₀ := x₀) gY) (inl_mapsTo x₀ y₀) rfl q.1)
+      (h.map_comp_apply n (incl (setB (y₀ := y₀) gX)) (jB (y₀ := y₀) gX) (inr x₀ y₀)
+        (fun _ hx => hx) (jB_mapsTo (y₀ := y₀) gX) (inr_mapsTo x₀ y₀) rfl q.2)
   rw [e]
   exact hψ.comp ⟨hjA.1.prodMap hjB.1, hjA.2.prodMap hjB.2⟩
 
