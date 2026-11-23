@@ -170,7 +170,7 @@ theorem bijective_of_retract (n : ℤ) {A : Set X} {B : Set Y} (f : C(X, Y)) (g 
     Function.Bijective (h.map n f hf) := by
   refine h.bijective_of_inverse n f g hf hg (h.map_map_eq_self n f g hf hg hgf) fun b => ?_
   rw [← h.map_comp_apply n f g (f.comp g) hf hg (hf.comp hg) rfl b,
-    ← h.homotopy n _ _ (fun _ hy => hy) (hf.comp hg) G hG]
+    ← h.homotopy n (ContinuousMap.id Y) (f.comp g) (fun _ hy => hy) (hf.comp hg) G hG]
   exact h.map_id_apply n _ _ rfl b
 
 theorem nontrivial_congr {G G' : Type} [AddCommGroup G] [AddCommGroup G'] {f : G →+ G'}
@@ -215,16 +215,20 @@ theorem subsingleton_univ (n : ℤ) : Subsingleton (h.H n X univ) := by
 theorem subsingleton_of_contraction (n : ℤ) {T : Type} [TopologicalSpace T] (S : Set T) (t₀ : T)
     (ht₀ : t₀ ∈ S) (E : (ContinuousMap.id T).Homotopy (ContinuousMap.const T t₀))
     (hE : ∀ t : I, MapsTo (fun x => E (t, x)) S S) : Subsingleton (h.H n T S) := by
-  haveI := h.subsingleton_univ (X := Unit) n
+  have := h.subsingleton_univ (X := Unit) n
   have hc1 : MapsTo (ContinuousMap.const T ()) S univ := fun _ _ => mem_univ _
   have hc2 : MapsTo (ContinuousMap.const Unit t₀) univ S := fun _ _ => ht₀
   have hall : ∀ a : h.H n T S, a = 0 := by
     intro a
-    have e1 := DFunLike.congr_fun
-      (h.homotopy n _ _ (fun _ hx => hx) (fun _ _ => ht₀) E hE) a
-    rw [h.map_id_apply n _ _ rfl a] at e1
-    rw [e1, h.map_comp_apply n (ContinuousMap.const Unit t₀) (ContinuousMap.const T ())
-      _ hc2 hc1 _ rfl a, Subsingleton.elim (h.map n _ hc1 a) 0, map_zero]
+    have e1 := DFunLike.congr_fun (h.homotopy n (ContinuousMap.id T) (ContinuousMap.const T t₀)
+      (fun _ hx => hx) (fun _ _ => ht₀) E hE) a
+    calc a = h.map n (ContinuousMap.id T) (fun _ hx => hx) a :=
+          (h.map_id_apply n (ContinuousMap.id T) (fun _ hx => hx) rfl a).symm
+      _ = h.map n (ContinuousMap.const T t₀) (fun _ _ => ht₀) a := e1
+      _ = h.map n (ContinuousMap.const Unit t₀) hc2 (h.map n (ContinuousMap.const T ()) hc1 a) :=
+          h.map_comp_apply n (ContinuousMap.const Unit t₀) (ContinuousMap.const T ())
+            (ContinuousMap.const T t₀) hc2 hc1 (fun _ _ => ht₀) rfl a
+      _ = 0 := by rw [Subsingleton.elim (h.map n (ContinuousMap.const T ()) hc1 a) 0, map_zero]
   exact ⟨fun a b => by rw [hall a, hall b]⟩
 
 /-- A retract of a pair with vanishing `H_n` has vanishing `H_n`. -/
