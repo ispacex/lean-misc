@@ -102,7 +102,7 @@ theorem nontrivial_euclid_iff (hpt : h.PointAxiom) (hS : h.SphereAxiom) (m : ℕ
       h.bijective_of_inverse k f g hf hg
         (h.map_map_eq_self k f g hf hg (ContinuousMap.ext fun v => (h0 v).symm))
         (h.map_map_eq_self k g f hg hf (ContinuousMap.ext fun _ => rfl))
-    exact (h.nontrivial_congr hb).trans ((h.nontrivial_iff_of (hpt k).1 (hpt k).2).trans
+    exact (nontrivial_congr hb).trans ((nontrivial_iff_of (hpt k).1 (hpt k).2).trans
       (by omega))
   | succ m =>
     let R := EuclideanSpace ℝ (Fin (m + 1))
@@ -161,7 +161,9 @@ theorem nontrivial_euclid_iff (hpt : h.PointAxiom) (hS : h.SphereAxiom) (m : ℕ
           smul_ne_zero (hcoef q.1 q.2).ne' q.2.2⟩
         continuous_toFun := by
           refine Continuous.subtype_mk ?_ _
-          refine Continuous.smul ?_ (continuous_subtype_val.comp continuous_snd)
+          refine Continuous.smul
+            (f := fun q : I × O => (1 - (q.1 : ℝ)) + (q.1 : ℝ) * ‖(q.2 : R)‖⁻¹)
+            (g := fun q : I × O => (q.2 : R)) ?_ (continuous_subtype_val.comp continuous_snd)
           refine (continuous_const.sub (continuous_subtype_val.comp continuous_fst)).add
             ((continuous_subtype_val.comp continuous_fst).mul ?_)
           exact (continuous_norm.comp (continuous_subtype_val.comp continuous_snd)).inv₀
@@ -195,8 +197,8 @@ theorem nontrivial_euclid_iff (hpt : h.PointAxiom) (hS : h.SphereAxiom) (m : ℕ
       rw [mem_sphere_zero_iff_norm.1 s.2, inv_one, one_smul]
     have hbι : Function.Bijective (h.map (k - 1) ι hιA) :=
       h.bijective_of_retract (k - 1) ι ρ hιA hρA hιρ G hG
-    exact (h.nontrivial_congr hbd).trans ((h.nontrivial_congr hbι).symm.trans
-      ((h.nontrivial_iff_of (hS m (k - 1)).1 (hS m (k - 1)).2).trans (by omega)))
+    exact (nontrivial_congr hbd).trans ((nontrivial_congr hbι).symm.trans
+      ((nontrivial_iff_of (hS m (k - 1)).1 (hS m (k - 1)).2).trans (by omega)))
 
 /-- Lemma 4: for an `m`-manifold `M` and `x ∈ M`, `H_k(M, M ∖ x)` is nontrivial iff `k = m`. -/
 theorem nontrivial_local_iff (hpt : h.PointAxiom) (hS : h.SphereAxiom) {M : Type}
@@ -227,8 +229,8 @@ theorem nontrivial_local_iff (hpt : h.PointAxiom) (hS : h.SphereAxiom) {M : Type
   have he₂ : IsOpenEmbedding e₂ :=
     ((Homeomorph.subRight c).isOpenEmbedding.comp χ.isOpenEmbedding).comp
       hPo.isOpenEmbedding_subtypeVal
-  have h₁ := h.nontrivial_congr (h.bijective_local_of_isOpenEmbedding k e₁ he₁ p)
-  have h₂ := h.nontrivial_congr (h.bijective_local_of_isOpenEmbedding k e₂ he₂ p)
+  have h₁ := nontrivial_congr (h.bijective_local_of_isOpenEmbedding k e₁ he₁ p)
+  have h₂ := nontrivial_congr (h.bijective_local_of_isOpenEmbedding k e₂ he₂ p)
   have hc : e₂ p = 0 := sub_self c
   rw [hc] at h₂
   change Nontrivial (h.H k P {p}ᶜ) ↔ Nontrivial (h.H k M {x}ᶜ) at h₁
@@ -247,7 +249,7 @@ theorem dim_eq_of_homeomorph (hpt : h.PointAxiom) (hS : h.SphereAxiom) {M N : Ty
     rw [← f.apply_symm_apply y, show f.symm y = x from hy'])
   have hb := h.bijective_of_homeomorph (m : ℤ) f hA hB
   have hm : Nontrivial (h.H m M {x}ᶜ) := (h.nontrivial_local_iff hpt hS hM x m).2 rfl
-  have hn : Nontrivial (h.H m N {f x}ᶜ) := (h.nontrivial_congr hb).1 hm
+  have hn : Nontrivial (h.H m N {f x}ᶜ) := (nontrivial_congr hb).1 hm
   exact_mod_cast (h.nontrivial_local_iff hpt hS hN (f x) m).1 hn
 
 end HomologyTheory

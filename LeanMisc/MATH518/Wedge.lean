@@ -165,7 +165,7 @@ theorem inl_mapsTo : MapsTo (inl x₀ y₀) {x₀} {base x₀ y₀} := by
 theorem inr_mapsTo : MapsTo (inr x₀ y₀) {y₀} {base x₀ y₀} := by
   intro y hy
   rw [mem_singleton_iff] at hy
-  subst hy
+  rw [hy]
   exact mem_singleton_iff.2 (mk_inr_y₀ x₀ y₀)
 
 /-- The subset `P ∨ Q ⊆ X ∨ Y` for `x₀ ∈ P`, `y₀ ∈ Q`. -/
@@ -275,7 +275,7 @@ theorem dA_inr (t : I) {y : Y} (hy : y ∈ gY.U) :
 
 theorem dA_mem (t : I) {w : Wedge x₀ y₀} (hw : w ∈ setA gY) : dA gY t w ∈ setA gY := by
   obtain ⟨s | s, rfl⟩ := exists_rep x₀ y₀ w
-  · exact mem_univ _
+  · exact mem_univ s
   · rw [dA_inr gY t hw]; exact (gY.F _).2
 
 theorem continuous_dA : Continuous fun p : I × setA (x₀ := x₀) gY => dA gY p.1 p.2.1 := by
@@ -301,7 +301,7 @@ def rA : C(setA (x₀ := x₀) gY, X) :=
     have : Continuous fun p : I × setA (x₀ := x₀) gY => rAfun (x₀ := x₀) (y₀ := y₀) p.2.1 :=
       continuous_of_pieces _ (isOpen_setA gY) (fun p => rAfun (x₀ := x₀) (y₀ := y₀) p.2.1)
         (continuous_subtype_val.comp continuous_snd) continuous_const
-    exact this.comp (continuous_const.prodMk continuous_id)⟩
+    exact this.comp (Continuous.prodMk (f := fun _ => (0 : I)) continuous_const continuous_id)⟩
 
 def DA : C(I × setA (x₀ := x₀) gY, setA (x₀ := x₀) gY) :=
   ⟨fun p => ⟨dA gY p.1 p.2.1, dA_mem gY p.1 p.2.2⟩, (continuous_dA gY).subtype_mk _⟩
@@ -360,7 +360,7 @@ theorem dB_inl (t : I) {x : X} (hx : x ∈ gX.U) :
 theorem dB_mem (t : I) {w : Wedge x₀ y₀} (hw : w ∈ setB gX) : dB gX t w ∈ setB gX := by
   obtain ⟨s | s, rfl⟩ := exists_rep x₀ y₀ w
   · rw [dB_inl gX t hw]; exact (gX.F _).2
-  · exact mem_univ _
+  · exact mem_univ s
 
 theorem continuous_dB : Continuous fun p : I × setB (y₀ := y₀) gX => dB gX p.1 p.2.1 := by
   refine continuous_of_pieces _ (isOpen_setB gX) _ ?_ ?_
@@ -383,7 +383,7 @@ def rB : C(setB (y₀ := y₀) gX, Y) :=
     have : Continuous fun p : I × setB (y₀ := y₀) gX => rBfun (x₀ := x₀) (y₀ := y₀) p.2.1 :=
       continuous_of_pieces _ (isOpen_setB gX) (fun p => rBfun (x₀ := x₀) (y₀ := y₀) p.2.1)
         continuous_const (continuous_subtype_val.comp continuous_snd)
-    exact this.comp (continuous_const.prodMk continuous_id)⟩
+    exact this.comp (Continuous.prodMk (f := fun _ => (0 : I)) continuous_const continuous_id)⟩
 
 def DB : C(I × setB (y₀ := y₀) gX, setB (y₀ := y₀) gX) :=
   ⟨fun p => ⟨dB gX p.1 p.2.1, dB_mem gX p.1 p.2.2⟩, (continuous_dB gX).subtype_mk _⟩
@@ -539,12 +539,12 @@ theorem wedge_bijective (gX : GoodNbhd x₀) (gY : GoodNbhd y₀) (n : ℤ) :
     Function.Bijective (fun q : h.H n X {x₀} × h.H n Y {y₀} =>
       h.map n (inl x₀ y₀) (inl_mapsTo x₀ y₀) q.1 + h.map n (inr x₀ y₀) (inr_mapsTo x₀ y₀) q.2) := by
   -- step 3: `X → A` and `Y → B` induce isomorphisms
-  have hjA : Function.Bijective (h.map n (jA gY) (jA_mapsTo gY)) :=
-    h.bijective_of_retract n (jA gY) (rA gY) (jA_mapsTo gY) (rA_mapsTo gY)
-      (ContinuousMap.ext fun _ => rfl) (homA gY) (homA_rel gY)
-  have hjB : Function.Bijective (h.map n (jB gX) (jB_mapsTo gX)) :=
-    h.bijective_of_retract n (jB gX) (rB gX) (jB_mapsTo gX) (rB_mapsTo gX)
-      (ContinuousMap.ext fun _ => rfl) (homB gX) (homB_rel gX)
+  have hjA : Function.Bijective (h.map n (jA (x₀ := x₀) gY) (jA_mapsTo (x₀ := x₀) gY)) :=
+    h.bijective_of_retract n (jA (x₀ := x₀) gY) (rA (x₀ := x₀) gY) (jA_mapsTo (x₀ := x₀) gY) (rA_mapsTo (x₀ := x₀) gY)
+      (ContinuousMap.ext fun _ => rfl) (homA (x₀ := x₀) gY) (homA_rel (x₀ := x₀) gY)
+  have hjB : Function.Bijective (h.map n (jB (y₀ := y₀) gX) (jB_mapsTo (y₀ := y₀) gX)) :=
+    h.bijective_of_retract n (jB (y₀ := y₀) gX) (rB (y₀ := y₀) gX) (jB_mapsTo (y₀ := y₀) gX) (rB_mapsTo (y₀ := y₀) gX)
+      (ContinuousMap.ext fun _ => rfl) (homB (y₀ := y₀) gX) (homB_rel (y₀ := y₀) gX)
   -- step 4: Mayer–Vietoris for the cover `A ∪ B`
   have hkA := h.bijective_of_triple n
     (X := setA (x₀ := x₀) gY) (A := Subtype.val ⁻¹' setB (y₀ := y₀) gX)
@@ -565,12 +565,12 @@ theorem wedge_bijective (gX : GoodNbhd x₀) (gY : GoodNbhd y₀) (n : ℤ) :
           h.H n (setB (y₀ := y₀) gX) (Subtype.val ⁻¹' {base x₀ y₀}) =>
         h.map n (B := {base x₀ y₀}) (incl (setA (x₀ := x₀) gY)) (fun _ hx => hx) q.1 +
           h.map n (B := {base x₀ y₀}) (incl (setB (y₀ := y₀) gX)) (fun _ hx => hx) q.2) ∘
-        Prod.map (h.map n (jA gY) (jA_mapsTo gY)) (h.map n (jB gX) (jB_mapsTo gX)) := by
+        Prod.map (h.map n (jA (x₀ := x₀) gY) (jA_mapsTo (x₀ := x₀) gY)) (h.map n (jB (y₀ := y₀) gX) (jB_mapsTo (y₀ := y₀) gX)) := by
     funext q
     simp only [Function.comp_apply, Prod.map_fst, Prod.map_snd]
-    rw [h.map_comp_apply n (incl _) (jA gY) (inl x₀ y₀) (fun _ hx => hx) (jA_mapsTo gY)
+    rw [h.map_comp_apply n (incl _) (jA (x₀ := x₀) gY) (inl x₀ y₀) (fun _ hx => hx) (jA_mapsTo (x₀ := x₀) gY)
         (inl_mapsTo x₀ y₀) rfl,
-      h.map_comp_apply n (incl _) (jB gX) (inr x₀ y₀) (fun _ hx => hx) (jB_mapsTo gX)
+      h.map_comp_apply n (incl _) (jB (y₀ := y₀) gX) (inr x₀ y₀) (fun _ hx => hx) (jB_mapsTo (y₀ := y₀) gX)
         (inr_mapsTo x₀ y₀) rfl]
   rw [e]
   exact hψ.comp ⟨hjA.1.prodMap hjB.1, hjA.2.prodMap hjB.2⟩
