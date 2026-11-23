@@ -13,6 +13,10 @@ are homotopy equivalences of pointed spaces and `A ∩ B = U ∨ V` is contracti
 step 4 (Mayer–Vietoris for an open cover with contractible intersection) is derived here from
 the exact sequences of the triples `(X∨Y, A, *)`, `(A, A∩B, *)` and excision
 (`HomologyTheory.bijective_sum_of_cover`).
+
+Differences from the text: step 1 (`i_X` is an embedding) is not needed, since `X → A` is shown to
+be a pointed homotopy equivalence directly (`jA`, `rA`, `homA`); the Whitehead lemma of step 3 is
+Mathlib's `IsQuotientMap.continuous_lift_prod_right` (`Wedge.continuous_of_pieces`).
 -/
 
 open Set Topology

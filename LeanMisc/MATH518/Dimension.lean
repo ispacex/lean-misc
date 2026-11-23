@@ -11,6 +11,10 @@ assumption.  From the axioms of `HomologyTheory` together with `PointAxiom` and 
 * `nontrivial_euclid_iff` — `H_k(ℝ^m, ℝ^m ∖ 0) ≠ 0 ↔ k = m` (Lemma 3);
 * `nontrivial_local_iff` — `H_k(M, M ∖ x) ≠ 0 ↔ k = m` (Lemma 4, via excision);
 * `dim_eq_of_homeomorph` — homeomorphic nonempty manifolds have equal dimension (claim `thm:dim`).
+
+Lemma 1 of the text (a chart onto all of `ℝ^m`) is not needed: an open `W ∋ x` inside the chart
+domain embeds openly both into `M` and into `ℝ^m`, and `bijective_local_of_isOpenEmbedding`
+(excision) is applied on both sides.
 -/
 
 open Set Topology Metric

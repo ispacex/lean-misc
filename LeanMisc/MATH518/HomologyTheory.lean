@@ -64,7 +64,8 @@ structure HomologyTheory where
   homotopy : ∀ (n : ℤ) {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y] {A : Set X}
     {B : Set Y} (f g : C(X, Y)) (hf : MapsTo f A B) (hg : MapsTo g A B) (F : f.Homotopy g),
     (∀ t : I, MapsTo (fun x => F (t, x)) A B) → map n f hf = map n g hg
-  /-- The boundary map `∂ : H_n(X, A) → H_{n-1}(A, B)` of a triple `(X, A, B)`. -/
+  /-- The boundary map `∂ : H_n(X, A) → H_{n-1}(A, B)` of a triple `(X, A, B)`.  It is given for
+  all `A, B`, but the axioms below constrain it only when `B ⊆ A`. -/
   bd : ∀ (n : ℤ) {X : Type} [TopologicalSpace X] (A B : Set X),
     H n X A →+ H (n - 1) A (Subtype.val ⁻¹' B)
   /-- Exactness of `H_n(A, B) → H_n(X, B) → H_n(X, A)` for `B ⊆ A ⊆ X`. -/
